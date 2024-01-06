@@ -1,0 +1,136 @@
+
+                                                         // ROUTE-53 LOADBALANCER //
+Steps :
+
+1. Create VPC
+
+↪  vpc and more.
+   ex:-Load 53
+↪Two Availability zones
+↪Number of public subnets is 2.
+↪Number of private Subnet is 0.
+↪No Need of NAT Gateways.
+↪None vpc endpoints.
+                 ↓
+2. Create instances
+
+Instance 1- 53load & → Select ( 53load-vpc) →
+Subnet-Public1 → Security group (port no: 22,80,443)
+
+Instance 2 - 53 Load 2 → select ( 53 load-vpc) → Subnet-public2
+ Security - group (port no :22, 80,443).
+
+3. Target Groups
+→Instances
+→53load TG
+↪HTTP > 80
+↪53 Lood-vpc Select
+→ Select two instances & click
+include as pending below
+→ Create Target group
+→ Now Need To Make TG Healthy 
+→ TG can be healthy if we connect both the instances and install httpd and host the web pages.
+
+                                               ↓       
+
+↪ Connect Instance I to ssh
+ex:- (53 Load 1) connect ssh
+→ yum update
+→ yum install httpd -y
+→ cd /var/www/html/
+  copy the link of CSS template and download in html directory by,
+→ wget <Link of the CSS template>
+[..html]→ .zip file their present
+[..html]→unzip <file name> 
+[..html] ls
+example the file present their name 'troweld-html'
+[..html]# cd troweld-html
+[..troweld-html]# ls
+All files will show here.
+→Move all that files in /html directory just before this directory.
+→[troweld-html]# mv * ../
+→[..html]# ls
+All files comes in html directory.
+→[..html]# systemctl start httpd
+                   systemctl status httpd
+copy public IP and Paste in URL and Enter
+*Imp*: same Do with instance 2 by hosting different web page.
+
+Now you have to wait for
+time  to see TG Healthy But
+don't wait start creating Load Balancer.
+                 
+                                               ↓       
+
+4. Create Load Balancer.
+→Select ALB
+→internet-facing 
+→ select VPC → 53load-vpc
+→ Select Both eu-west-1a and eu-west-1b
+→ Select only security groug consist 
+of 80, 443, 22
+↪Listeners main
+HTTP →80→ <select TG ex: 53LoadTG> 
+Note:
+     Now Load Balancer Created
+→ Go Load Balancer and Copy  DNS name
+→ First check TG Must Healty.
+→ copy DNS of load balancer and paste it in URL.
+→ page refresh karke dekho jo do page host kiya gaya hai vo change hona chahiye tho LoadBalancer  work kar raha hai.
+
+5.Now Go To Hostinger For.
+→ click manager
+→ go nameservers
+→ click change nameserver.
+Now copy the 4nameservers which provided by ROUTE53 and paste it in Hostinger.
+
+6.GO ACM [amazon certificate manager]
+→ create request
+→ Next
+→ Domain Name main vo domain daliye jo buy kiya hai.
+→ ACM provide CNAME when you click it.
+
+7. Go Route53
+↪Go Hosted zones
+ ↪create hosted zone
+  Domain Name:
+                and Create Hosted Zone.
+→ Now click terraquad.cloud and go inside it.
+→ Their will be option of create Record
+  ↪click create record 
+      ↪ON The Alias
+endpoint→ Alias To Application and classic load balancer
+Region→  Ireland
+choose LoadBalancer → select Load Balancer
+
+           Now Create Record
+Also Copy all name server from Route53 and paste it in Hostinger Domain.
+
+
+8.Now Go Load Balancer
+→  Add Listners their 
+  ↪select HTTPS To Port[443]
+→Forward To TG
+→select a Target group
+→From ACM
+→select a certificate of ACM and create it.
+
+9. overviw of task
+→Now Copy Domain Which we BUY and Paste it in URL.
+→Now Webpage will see their with security SSL.
+→when you Refresh the page two webpage will see after one.
+→This is task Now it Finsih
+---------------------------------------------------------************-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+ 
